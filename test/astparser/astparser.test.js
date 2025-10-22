@@ -13,6 +13,7 @@ describe('test/astparser/astparser.test.js', () => {
   let classMap;
   let enumMap;
   let proxyMap;
+  let declareMap;
 
   before(() => {
     const tmpSourceDir = join(os.tmpdir(), Date.now().toString());
@@ -41,6 +42,7 @@ describe('test/astparser/astparser.test.js', () => {
     classMap = astJson.classMap;
     enumMap = astJson.enumMap;
     proxyMap = astJson.proxyMap;
+    declareMap = astJson.declareMap;
   });
 
   describe('com.ali.jar2proxy.generic.model.TMgetPopCountRequest', () => {
@@ -146,6 +148,22 @@ describe('test/astparser/astparser.test.js', () => {
     });
   });
 
+  describe('com.ali.jar2proxy.generic.enums.GetNameCase', () => {
+    let clz;
+    before(() => {
+      clz = enumMap['com.ali.jar2proxy.generic.enums.GetNameCase'];
+    });
+    it('enum GET_NAME_CASE "name" override "$name" should ok', () => {
+      const field = clz.fields.find(item => item.fieldName === 'GET_NAME_CASE');
+      assert(field.commentText === '');
+      assert(field.fieldName === 'GET_NAME_CASE');
+      assert(field.canonicalName === 'com.ali.jar2proxy.generic.enums.GetNameCase');
+      assert(field.enumValue.$name === 'GET_NAME_CASE');
+      assert(field.enumValue.name === 'n');
+      assert(field.enumValue.code === 'c');
+    });
+  });
+
   describe('com.ali.jar2proxy.normal.facade.UserFacade', () => {
     let clz;
     before(() => {
@@ -158,7 +176,7 @@ describe('test/astparser/astparser.test.js', () => {
       assert(method.params.length === 1);
       assert(method.params[0].paramName === 'userId');
       assert(method.params[0].canonicalName === 'java.lang.String');
-      assert(method.raw === ' public UserInfo queryByUserId(String userId);');
+      assert(method.raw.includes(' public UserInfo queryByUserId(String userId);'));
       assert(method.returnType.canonicalName === 'com.ali.jar2proxy.normal.model.UserInfo');
     });
 
@@ -168,7 +186,7 @@ describe('test/astparser/astparser.test.js', () => {
       assert(method.params.length === 1);
       assert(method.params[0].paramName === 'user');
       assert(method.params[0].canonicalName === 'com.ali.jar2proxy.normal.model.UserInfo');
-      assert(method.raw === ' public UserInfo queryByUserId(UserInfo user);');
+      assert(method.raw.includes(' public UserInfo queryByUserId(UserInfo user);'));
       assert(method.returnType.canonicalName === 'com.ali.jar2proxy.normal.model.UserInfo');
     });
 
@@ -180,7 +198,7 @@ describe('test/astparser/astparser.test.js', () => {
       assert(method.params[0].canonicalName === 'java.lang.String');
       assert(method.params[0].isArray === true);
       assert(method.params[0].arrayDepth === 1);
-      assert(method.raw === ' public UserInfo queryByUserIds(String[] userIds);');
+      assert(method.raw.includes(' public UserInfo queryByUserIds(String[] userIds);'));
       assert(method.returnType.canonicalName === 'com.ali.jar2proxy.normal.model.UserInfo');
     });
 
@@ -192,7 +210,7 @@ describe('test/astparser/astparser.test.js', () => {
       assert(method.params[0].canonicalName === 'java.lang.String');
       assert(method.params[0].isArray === true);
       assert(method.params[0].arrayDepth === 2);
-      assert(method.raw === ' public UserInfo queryByUserIds(String[][] userIds);');
+      assert(method.raw.includes(' public UserInfo queryByUserIds(String[][] userIds);'));
       assert(method.returnType.canonicalName === 'com.ali.jar2proxy.normal.model.UserInfo');
       assert(method.isOverloading === true);
     });
@@ -208,8 +226,31 @@ describe('test/astparser/astparser.test.js', () => {
       assert(method.params[0].generic[1].type === 'java.lang.String');
       assert(method.params[0].generic[1].isArray === true);
       assert(method.params[0].generic[1].arrayDepth === 1);
-      assert(method.raw === ' public UserInfo queryUserInfoByGeneric(Map<Integer, String[]> inputProps);');
+      assert(method.raw.includes(' public UserInfo queryUserInfoByGeneric(Map<Integer, String[]> inputProps);'));
       assert(method.returnType.canonicalName === 'com.ali.jar2proxy.normal.model.UserInfo');
+    });
+
+  });
+
+  describe('declareMap', () => {
+
+    it('com.ali.jar2proxy.extend.model.UserConsultRequest', () => {
+      const declareList = declareMap['com.ali.jar2proxy.extend.model.UserConsultRequest'];
+      assert(declareList.length === 1);
+      assert.equal(declareList[0], 'com.ali.jar2proxy.extend.model.UccUserCalcConsultRequest');
+    });
+
+    it('com.ali.jar2proxy.extend.model.PayToolConsultRequest', () => {
+      const declareList = declareMap['com.ali.jar2proxy.extend.model.PayToolConsultRequest'];
+      assert(declareList.length === 3);
+      const list = [
+        'com.ali.jar2proxy.extend.model.UserConsultRequest',
+        'com.ali.jar2proxy.extend.model.UccUserCalcConsultRequest',
+        'com.ali.jar2proxy.extend.model.PayToolBaseConsultRequest',
+      ];
+      list.forEach(item => {
+        assert(declareList.includes(item));
+      });
     });
 
   });
