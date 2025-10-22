@@ -19,3 +19,7 @@ package-lock.json
 
 assembly/
 mocks_data/proxy/**/__*
+
+# TypeScript build output
+dist/
+*.tsbuildinfo

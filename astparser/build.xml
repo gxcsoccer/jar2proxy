@@ -22,7 +22,7 @@
      <copy todir="${dest}" overwrite="true">
        <fileset dir="${resource.dir}" includes="log4j2.xml"/>
      </copy>
-     <javac source="1.6" target="1.6" includeantruntime="true" srcdir="${src.dir}" destdir="${dest}" debug="on" encoding="UTF-8">
+     <javac source="1.8" target="1.8" includeantruntime="true" srcdir="${src.dir}" destdir="${dest}" debug="on" encoding="UTF-8">
         <classpath refid="classpath"/>
      </javac>
   </target>
